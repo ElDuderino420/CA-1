@@ -1,0 +1,1 @@
+java -cp Chat.jar chat.ChatServer localhost 9999

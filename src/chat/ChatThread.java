@@ -30,22 +30,26 @@ public class ChatThread extends Thread {
     private TreeMap tm;
     private String[] list;
     private String localName;
+
     // duplicate name entry
-    public void UserName() throws IOException {
+    public boolean UserName() throws IOException {
         try {
             String line = scan.nextLine();
             list = line.split("#");
-            if (list[0].toLowerCase().equals("user") && list.length == 2) {
+            if (list[0].toLowerCase().equals("user") && list.length == 2 && tm.get(list[1]) == null) {
                 tm.put(list[1], s);
                 localName = list[1];
-                System.out.println("User connected: " + localName);
+                Logger.getLogger(Log.LOG_NAME).log(Level.INFO,("User connected: " + localName));
+                Logger.getLogger(Log.LOG_NAME).log(Level.INFO,("Users online: " + makeUsers()));
+                Update(makeUsers());
+                return true;
             } else {
-                pw.println("Error: not valid user");
-                UserName();
+                Logger.getLogger(Log.LOG_NAME).log(Level.SEVERE,"Connection failed");
+                return false;
             }
         } catch (java.lang.ArrayIndexOutOfBoundsException o) {
-            pw.println("Error: not valid user");
-            UserName();
+            Logger.getLogger(Log.LOG_NAME).log(Level.SEVERE,"Connection failed");
+            return false;
         }
 
     }
@@ -92,11 +96,10 @@ public class ChatThread extends Thread {
         try {
             scan = new Scanner(s.getInputStream());
             pw = new PrintWriter(s.getOutputStream(), true);
-            pw.println("");
-            UserName();
-
             boolean stop = false;
-
+            if(!UserName()){
+                stop = true;
+            }
             while (!stop) {
                 String line = scan.nextLine();
 //                line = line.replaceAll("/#", "[h]");
@@ -109,6 +112,7 @@ public class ChatThread extends Thread {
                     case "send":
                         if (list.length == 3) {
                             if (list[1].equals("*")) {
+                                list[1] = "All: " + makeUsers();
                                 Iterator it = tm.entrySet().iterator();
                                 while (it.hasNext()) {
 
@@ -132,35 +136,32 @@ public class ChatThread extends Thread {
                                     }
                                 }
                             }
+                            Logger.getLogger(Log.LOG_NAME).log(Level.INFO,("Message sent from: " + localName + ", to: " + list[1]));
                         }
                         break;
                     case "logout":
-                        tm.remove(localName);
-                        break;
-
+                        if (line.contains("#")) {
+                            tm.remove(localName);
+                            Logger.getLogger(Log.LOG_NAME).log(Level.INFO,("Disconnected: " + localName));
+                            Logger.getLogger(Log.LOG_NAME).log(Level.INFO,("Users online: " + makeUsers()));
+                            stop = true;
+                            Update(makeUsers());
+                        }
+                    break;
                 }
 
-                Update(makeUsers());
             }
 
-        } catch (java.util.NoSuchElementException o) {
+        } catch (java.util.NoSuchElementException | java.lang.ArrayIndexOutOfBoundsException o) {
             try {
                 tm.remove(localName);
-                System.out.println("disconnected: " + localName);
-                Update(makeUsers());
-            } catch (IOException ex1) {
-                System.out.println("derp");
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(ChatThread.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (java.lang.ArrayIndexOutOfBoundsException o) {
-            try {
-                tm.remove(localName);
-                System.out.println("disconnected: " + localName);
+                Logger.getLogger(Log.LOG_NAME).log(Level.INFO,("Disconnected: " + localName));
                 Update(makeUsers());
             } catch (IOException ex) {
-                Logger.getLogger(ChatThread.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ChatThread.class.getName()).log(Level.SEVERE, ex.getMessage());
             }
+        } catch (IOException ex) {
+            Logger.getLogger(ChatThread.class.getName()).log(Level.SEVERE, ex.getMessage());
         }
     }
 }
