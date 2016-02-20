@@ -157,7 +157,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="ipBox">
       <Properties>
-        <Property name="text" type="java.lang.String" value="TotalFaggotry.cloudapp.net"/>
+        <Property name="text" type="java.lang.String" value="blazeit.cloudapp.net"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ipBoxActionPerformed"/>

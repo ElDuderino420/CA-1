@@ -83,7 +83,7 @@ public class GUI extends javax.swing.JFrame implements IObs {
             }
         });
 
-        ipBox.setText("TotalFaggotry.cloudapp.net");
+        ipBox.setText("blazeit.cloudapp.net");
         ipBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ipBoxActionPerformed(evt);
