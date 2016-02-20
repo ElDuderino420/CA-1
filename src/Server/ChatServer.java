@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package chat;
+package Server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -27,7 +27,7 @@ public class ChatServer {
     public void startServer() throws IOException {
         serverSock = new ServerSocket();
         serverSock.bind(new InetSocketAddress(ip, port));
-        Logger.getLogger(Log.LOG_NAME).log(Level.INFO,("server started, listening on port: " + port));
+        Logger.getLogger(Log.LOG_NAME).log(Level.INFO, ("server started, listening on port: " + port));
         while (true) {
             java.net.Socket socket = serverSock.accept();//Remember Blocking Call
             ChatThread st = new ChatThread(tm, socket);
@@ -49,5 +49,10 @@ public class ChatServer {
         } finally {
             Log.closeLogger();
         }
+    }
+
+    public void tester(String ip, int port) {
+        this.ip = ip;
+        this.port = port;
     }
 }
